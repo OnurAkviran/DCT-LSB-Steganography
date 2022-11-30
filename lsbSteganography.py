@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 from PIL import Image
-np.set_printoptions(threshold=sys.maxsize)
+np.set_printoptions(threshold=sys.maxsize) # To use full representation instead of summarization
 
 def encode(src, message, destination):
     # OPEN AND CREATE AN ARRAY OF THE SOURCE IMAGE
@@ -23,14 +23,15 @@ def encode(src, message, destination):
 
     if requiredPixels > totalPixels:
         print("Image size not sufficient for the message, try a larger image file")
-        
+
     else:
         i = 0
         for p in range(totalPixels):
             for q in range(0,3):
                 if i < requiredPixels:
-                    array[p][q] = int(bin(array[p][q])[2:9] + binaryMessage[i], 2)
+                    array[p][q] = int(bin(array[p][q])[2:9] + binaryMessage[i], 2) # bin() returns "0b--numbertobinary--" so the [2:9] is there to eliminate the "0b"
                     i += 1
+
         array = array.reshape(height,width,n)
         encryptedImage = Image.fromarray(array.astype('uint8'), sourceImage.mode)
         encryptedImage.save(destination)
@@ -54,16 +55,16 @@ def decode(src):
         for q in range(0, 3):
             hiddenBits += (bin(array[p][q])[2:][-1])
 
-    hiddenBits = [hiddenBits[i:i+8] for i in range(0, len(hiddenBits), 8)]
+    hiddenBits = [hiddenBits[i:i+8] for i in range(0, len(hiddenBits), 8)]# this makes the hiddenbits string into 8 bit groups
 
     message = ""
     for i in range(len(hiddenBits)):
         if message[-4:] == "$END":
             break
         else:
-            message += chr(int(hiddenBits[i], 2))
+            message += chr(int(hiddenBits[i], 2))#convert each 8 bit to a char
     if "$END" in message:
-        print("Hidden Message:", message[:-4])
+        print("Payload:", message[:-4]) 
     else:
         print("No Hidden Message Found")
 
@@ -88,7 +89,7 @@ def main():
         elif userInput == "2":
             print("Enter source path of the image you wish to decode: ")
             src = input()
-            print("Payload: ")
+            
             decode(src)
         else:
             print("There was an unknown error, try again...")
